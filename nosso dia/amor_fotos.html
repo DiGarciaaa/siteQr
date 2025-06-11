@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nosso Amor em Tempo Real ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Playfair Display', serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('download.jpg'); /* Verifique se 'download.jpg' está na mesma pasta que o seu HTML */
+            background-size: cover; /* Faz a imagem de fundo cobrir todo o body */
+            background-position: center center; /* Centraliza a imagem de fundo */
+            background-repeat: no-repeat; /* Evita que a imagem de fundo se repita */
+            color: #FFFFFF;
+            text-align: center;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            overflow: hidden; /* Essencial para que as polaroids não causem barras de rolagem ao sair */
+            position: relative; /* Para as polaroids se posicionarem em relação ao body */
+        }
+
+        .main-content-wrapper {
+            display: flex;
+            flex-direction: column; /* Contador sempre em coluna */
+            align-items: center;
+            justify-content: center;
+            max-width: 90%;
+            margin: auto;
+            position: relative; /* Essencial para o z-index e para conter o texto */
+            z-index: 10; /* Para o conteúdo principal ficar sempre acima das polaroids */
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.15); /* Mais transparente (15% de opacidade) */
+            padding: 40px 50px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 2px solid rgba(255, 255, 255, 0.4); /* Ajustei a borda para 0.4 de opacidade */
+            position: relative;
+            z-index: 1; /* Para o conteúdo do container estar acima do seu próprio background */
+            margin: 50px 0; /* Margem superior e inferior, 0 nas laterais */
+        }
+        
+        h1 {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+            color: #FFFFFF;
+        }
+
+        /* Estilo para o GIF transparente */
+        .transparent-gif {
+            width: 120px; /* Ajuste o tamanho conforme necessário (ex: 80px, 150px) */
+            height: auto; /* Mantém a proporção da imagem */
+            opacity: 0.4; /* Opacidade do GIF (40%). Ajuste entre 0.0 e 1.0 */
+            margin-top: 20px; /* Espaço acima do GIF */
+            margin-bottom: 20px; /* Espaço abaixo do GIF */
+            display: block; /* Garante que ele ocupe sua própria linha */
+            margin-left: auto; /* Centraliza o GIF horizontalmente */
+            margin-right: auto; /* Centraliza o GIF horizontalmente */
+        }
+
+        #countdown-display { 
+            font-size: 2.2em; 
+            font-weight: bold;
+            color: #FFFFFF;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+            animation: fadeIn 2s ease-out; 
+            display: inline-block;
+            line-height: 1.4; 
+        }
+
+        #countdown-display .value { 
+            font-size: 1.3em; 
+            color: #FFFF99; 
+        }
+
+        #message {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5em;
+            margin-top: 25px;
+            color: #FFFFFF;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Nova mensagem romântica */
+        #romantic-message {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3em; /* Levemente menor que a mensagem principal */
+            margin-top: 15px; /* Espaço acima */
+            margin-bottom: 15px; /* Espaço abaixo */
+            color: rgba(255, 255, 255, 0.95); /* Um branco quase puro */
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            font-style: italic; /* Pra dar um toque mais poético */
+        }
+
+        #additional-message {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.1em;
+            margin-top: 15px;
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ESTILO E ANIMAÇÃO DAS POLAROIDS */
+        .polaroid {
+            position: absolute;
+            width: 150px;
+            height: auto;
+            background-color: #FFFFFF;
+            padding: 10px 10px 30px 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+            opacity: 0;
+            transition: opacity 3.5s ease-in-out, transform 3.5s ease-in-out;
+            will-change: opacity, transform;
+            z-index: 0;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+
+        .polaroid img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .polaroid.visible {
+            opacity: 1;
+        }
+
+        /* Animações gerais */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 900px) { /* Ajuste para telas menores */
+            .container {
+                padding: 30px;
+                margin: 30px 0;
+            }
+            h1 {
+                font-size: 2.5em;
+            }
+            .transparent-gif { /* Ajusta o tamanho do GIF para telas menores */
+                width: 80px; 
+            }
+            #countdown-display {
+                font-size: 1.6em; 
+            }
+            #countdown-display .value {
+                font-size: 1.2em;
+            }
+            #message, #additional-message, #romantic-message { /* Incluindo a nova mensagem aqui */
+                font-size: 1.1em; /* Ajuste para caber em telas menores */
+            }
+            .polaroid {
+                width: 90px;
+                padding: 6px 6px 20px 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content-wrapper">
+        <div class="container">
+            <h1>Nosso Amor Completa</h1>
+            <img src="images/bear-love-cute.gif" alt="Ursinhos se abraçando" class="transparent-gif"> 
+
+            <div id="countdown-display"></div>
+            <p id="message">de pura alegria juntos!</p>
+            
+            <p id="romantic-message">Ao seu lado, o tempo para e cada instante se torna uma eternidade.</p>
+            
+            <p id="additional-message">Cada segundo ao seu lado é eterno em meu coração.</p>
+        </div>
+    </div>
+
+    <script>
+        // Data e hora de início do namoro (Ano, Mês - 1, Dia, Hora, Minuto, Segundo)
+        const startDate = new Date(2023, 6, 13, 0, 0, 0); 
+
+        // Array com os nomes das suas imagens na pasta 'images'
+      const images = [
+    'images/0c9faff7-7908-4816-a778-9d6b44c99b02.jpg',
+    'images/4A89DDDA-6FCD-4713-8D35-B1DC8CC2D0E7.jpg',
+    'images/4AFFB51B-7A0C-4676-A2D2-27DA4C7AEF4F.jpg',
+    'images/4B9B49A6-BF9B-4C48-AE17-606AE449EA1E.jpg',
+    'images/34D54472-261D-4F5A-8385-0A5E17B02CC2.jpg',
+    'images/5900f2ea-c2d8-4ab0-a7a1-d10e3ee8e557.jpg',
+    'images/947066cb-7a78-4de0-a417-d487201ea714.jpg',
+    'images/A1DD7DCA-53C5-4F16-9EBC-28DFD866B458.jpg',
+    'images/B5915F83-76CC-4889-B87A-89660CC78A8A.jpg',
+    'images/ede08698-fd6e-4d2a-9e29-c178d516e416.jpg',
+    'images/f154db43-9b12-426a-bcde-a6dc47850ff1.jpg',
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (1).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (2).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (3).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (4).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (5).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (6).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (7).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (8).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (9).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (10).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (11).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (12).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (13).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (14).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (15).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (16).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (17).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (18).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (19).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (20).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05 (21).jpeg', // Adicionado images/ e vírgula
+    'images/WhatsApp Image 2025-06-11 at 17.52.05.jpeg'       // Adicionado images/ e a última vírgula é opcional
+];
+        let currentImageGlobalIndex = 0;
+        const numberOfPolaroids = 7;
+
+        const activePolaroids = [];
+
+        const transitionDuration = 3500; // 3.5 segundos
+        const cycleInterval = 12000; // 12 segundos
+        const staggeredDelay = 2000; // 2 segundos
+
+        // Função para calcular e exibir o tempo detalhado
+        function updateDetailedCountdown() {
+            const now = new Date();
+            let diff = now.getTime() - startDate.getTime(); // Diferença em milissegundos
+
+            if (diff < 0) { 
+                document.getElementById('countdown-display').innerHTML = "Ainda não começamos!";
+                return;
+            }
+
+            const totalSeconds = Math.floor(diff / 1000);
+            const totalMinutes = Math.floor(totalSeconds / 60);
+            const totalHours = Math.floor(totalMinutes / 60);
+            const totalDays = Math.floor(totalHours / 24);
+
+            let years = 0;
+            let months = 0;
+            let tempDate = new Date(startDate);
+
+            while (tempDate.getFullYear() < now.getFullYear() || 
+                   (tempDate.getFullYear() === now.getFullYear() && tempDate.getMonth() < now.getMonth()) ||
+                   (tempDate.getFullYear() === now.getFullYear() && tempDate.getMonth() === now.getMonth() && tempDate.getDate() <= now.getDate())) {
+                
+                tempDate.setFullYear(tempDate.getFullYear() + 1);
+                if (tempDate.getTime() <= now.getTime()) {
+                    years++;
+                } else {
+                    tempDate.setFullYear(tempDate.getFullYear() - 1); 
+                    break;
+                }
+            }
+            tempDate = new Date(startDate.getFullYear() + years, startDate.getMonth(), startDate.getDate(), startDate.getHours(), startDate.getMinutes(), startDate.getSeconds());
+
+            while (tempDate.getFullYear() < now.getFullYear() || 
+                   (tempDate.getFullYear() === now.getFullYear() && tempDate.getMonth() < now.getMonth()) ||
+                   (tempDate.getFullYear() === now.getFullYear() && tempDate.getMonth() === now.getMonth() && tempDate.getDate() <= now.getDate())) {
+                
+                tempDate.setMonth(tempDate.getMonth() + 1);
+                if (tempDate.getTime() <= now.getTime()) {
+                    months++;
+                } else {
+                    tempDate.setMonth(tempDate.getMonth() - 1); 
+                    break;
+                }
+            }
+            months = months % 12;
+            years += Math.floor(months / 12); 
+
+            const remainingDiff = now.getTime() - tempDate.getTime();
+            const remainingSeconds = Math.floor(remainingDiff / 1000);
+            const remainingMinutes = Math.floor(remainingSeconds / 60);
+            const remainingHours = Math.floor(remainingMinutes / 60);
+            const remainingDays = Math.floor(remainingHours / 24);
+
+            const displayHours = remainingHours % 24;
+            const displayMinutes = remainingMinutes % 60;
+            const displaySeconds = remainingSeconds % 60;
+
+            const countdownHtml = `
+                <span class="value">${years}</span> ano${years !== 1 ? 's' : ''},
+                <span class="value">${months}</span> mes${months !== 1 ? 'es' : ''},
+                <span class="value">${remainingDays}</span> dia${remainingDays !== 1 ? 's' : ''}<br>
+                <span class="value">${displayHours}</span> hora${displayHours !== 1 ? 's' : ''},
+                <span class="value">${displayMinutes}</span> minuto${displayMinutes !== 1 ? 's' : ''},
+                <span class="value">${displaySeconds}</span> segundo${displaySeconds !== 1 ? 's' : ''}
+            `;
+            document.getElementById('countdown-display').innerHTML = countdownHtml;
+        }
+
+        // Função para criar uma nova polaroid e adicioná-la ao DOM
+        function createPolaroidElement() {
+            const newPolaroid = document.createElement('div');
+            newPolaroid.classList.add('polaroid');
+            const img = document.createElement('img');
+            img.alt = 'Nossa foto';
+            newPolaroid.appendChild(img);
+            document.body.appendChild(newPolaroid);
+            return newPolaroid;
+        }
+
+        // Função para calcular uma nova posição aleatória ao redor do contador
+        function setRandomPolaroidPosition(polaroidElement) {
+            const polaroidWidth = polaroidElement.offsetWidth;
+            const polaroidHeight = polaroidElement.offsetHeight;
+
+            const container = document.querySelector('.container');
+            const containerRect = container.getBoundingClientRect();
+
+            const buffer = Math.max(polaroidWidth, polaroidHeight) / 2 + 50; 
+            
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            let randomLeft, randomTop;
+            let overlapWithContainer = true;
+            let overlapWithOtherPolaroids = true;
+            let attempts = 0;
+            const maxAttempts = 100; 
+            const collisionBuffer = 30; 
+
+            while ((overlapWithContainer || overlapWithOtherPolaroids) && attempts < maxAttempts) {
+                const quadrant = Math.floor(Math.random() * 4); 
+
+                switch (quadrant) {
+                    case 0: // Top
+                        randomLeft = Math.random() * viewportWidth;
+                        randomTop = Math.random() * (containerRect.top - polaroidHeight - buffer);
+                        randomTop = Math.max(0, randomTop); 
+                        break;
+                    case 1: // Right
+                        randomLeft = Math.random() * (viewportWidth - (containerRect.right + buffer)) + (containerRect.right + buffer);
+                        randomLeft = Math.max(containerRect.right + buffer, randomLeft);
+                        randomTop = Math.random() * viewportHeight;
+                        break;
+                    case 2: // Bottom
+                        randomLeft = Math.random() * (viewportWidth - polaroidWidth); 
+                        randomTop = Math.random() * (viewportHeight - (containerRect.bottom + buffer)) + (containerRect.bottom + buffer);
+                        randomTop = Math.min(viewportHeight - polaroidHeight, randomTop);
+                        break;
+                    case 3: // Left
+                        randomLeft = Math.random() * (containerRect.left - polaroidWidth - buffer);
+                        randomLeft = Math.max(0, randomLeft);
+                        randomTop = Math.random() * viewportHeight;
+                        break;
+                }
+
+                randomLeft = Math.max(0, Math.min(randomLeft, viewportWidth - polaroidWidth));
+                randomTop = Math.max(0, Math.min(randomTop, viewportHeight - polaroidHeight));
+
+                overlapWithContainer = (
+                    randomLeft < containerRect.right + buffer &&
+                    randomLeft + polaroidWidth > containerRect.left - buffer &&
+                    randomTop < containerRect.bottom + buffer &&
+                    randomTop + polaroidHeight > containerRect.top - buffer
+                );
+
+                overlapWithOtherPolaroids = false;
+                for (const existingPolaroid of activePolaroids) {
+                    if (existingPolaroid === polaroidElement) continue;
+
+                    if (existingPolaroid.classList.contains('visible')) {
+                        const existingRect = existingPolaroid.getBoundingClientRect();
+                        
+                        if (
+                            randomLeft < existingRect.right + collisionBuffer &&
+                            randomLeft + polaroidWidth > existingRect.left - collisionBuffer &&
+                            randomTop < existingRect.bottom + collisionBuffer &&
+                            randomTop + polaroidHeight > existingRect.top - collisionBuffer
+                        ) {
+                            overlapWithOtherPolaroids = true;
+                            break; 
+                        }
+                    }
+                }
+                attempts++;
+            }
+
+            if (overlapWithContainer || overlapWithOtherPolaroids) {
+                console.warn("Não foi possível encontrar uma posição livre de sobreposição após várias tentativas. Alguma sobreposição pode ocorrer.");
+                randomLeft = Math.random() * (viewportWidth / 2 - polaroidWidth); 
+                if (Math.random() > 0.5) randomLeft += viewportWidth / 2; 
+                randomTop = Math.random() * (viewportHeight / 2 - polaroidHeight); 
+                if (Math.random() > 0.5) randomTop += viewportHeight / 2; 
+            }
+
+            const randomRotation = (Math.random() * 40 - 20) + 'deg'; 
+
+            polaroidElement.style.left = `${randomLeft}px`;
+            polaroidElement.style.top = `${randomTop}px`;
+            polaroidElement.style.transform = `translate(-50%, -50%) rotate(${randomRotation})`;
+        }
+
+        // Função para atualizar e animar uma única polaroid (imagem e posição)
+        function updatePolaroid(polaroidElement) {
+            const imgElement = polaroidElement.querySelector('img');
+
+            polaroidElement.classList.remove('visible');
+
+            setTimeout(() => {
+                imgElement.src = images[currentImageGlobalIndex % images.length];
+                currentImageGlobalIndex++; 
+
+                setRandomPolaroidPosition(polaroidElement);
+
+                polaroidElement.classList.add('visible');
+            }, transitionDuration); 
+        }
+
+        // Inicializa as polaroids e a contagem quando o DOM estiver completamente carregado
+        document.addEventListener('DOMContentLoaded', () => {
+            // Cria as polaroids inicialmente
+            for (let i = 0; i < numberOfPolaroids; i++) {
+                const polaroid = createPolaroidElement();
+                activePolaroids.push(polaroid);
+
+                polaroid.querySelector('img').src = images[currentImageGlobalIndex % images.length];
+                currentImageGlobalIndex++;
+
+                setRandomPolaroidPosition(polaroid);
+
+                setTimeout(() => {
+                    polaroid.classList.add('visible');
+                }, 500 * (i + 1));
+            }
+
+            // Inicia o ciclo de atualização para cada polaroid com atrasos escalonados
+            activePolaroids.forEach((polaroid, index) => {
+                setTimeout(() => {
+                    updatePolaroid(polaroid);
+                    setInterval(() => updatePolaroid(polaroid), cycleInterval);
+                }, staggeredDelay * (index + 1));
+            });
+
+            // Atualiza a contagem a cada segundo
+            updateDetailedCountdown(); // Primeira chamada imediata
+            setInterval(updateDetailedCountdown, 1000); // Atualiza a cada segundo
+        });
+
+        window.addEventListener('resize', () => {
+            activePolaroids.forEach(polaroid => {
+                if (polaroid.classList.contains('visible')) {
+                    setRandomPolaroidPosition(polaroid);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
